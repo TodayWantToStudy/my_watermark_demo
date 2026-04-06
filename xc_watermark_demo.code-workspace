@@ -1,0 +1,159 @@
+{
+    "folders": [
+        {
+            "path": "."
+        }
+    ],
+    "settings": {
+        "cmake.configureOnOpen": true,
+        "cmake.sourceDirectory": "${workspaceFolder}",
+        "cmake.buildDirectory": "${workspaceFolder}/build",
+        "cmake.defaultVariants": {
+            "buildType": "Release"
+        },
+        "files.associations": {
+            "*.pro": "qmake",
+            "*.h": "cpp",
+            "*.cpp": "cpp"
+        },
+        "C_Cpp.default.configurationProvider": "ms-vscode.cmake-tools",
+        "qt.qtConfigPath": "${workspaceFolder}"
+    },
+    "extensions": {
+        "recommendations": [
+            "ms-vscode.cmake-tools",
+            "ms-vscode.cpptools",
+            "twxs.cmake",
+            "ms-vscode.cpptools-extension-pack"
+        ]
+    },
+    "tasks": {
+        "version": "2.0.0",
+        "tasks": [
+            {
+                "label": "CMake: Configure",
+                "type": "shell",
+                "command": "cmake",
+                "args": [
+                    "-S",
+                    "${workspaceFolder}",
+                    "-B",
+                    "${workspaceFolder}/build",
+                    "-DCMAKE_BUILD_TYPE=Release",
+                    "-DCMAKE_EXPORT_COMPILE_COMMANDS=ON"
+                ],
+                "group": "build",
+                "problemMatcher": [],
+                "detail": "Configure CMake project"
+            },
+            {
+                "label": "CMake: Build",
+                "type": "shell",
+                "command": "cmake",
+                "args": [
+                    "--build",
+                    "${workspaceFolder}/build",
+                    "--config",
+                    "Release",
+                    "-j"
+                ],
+                "group": {
+                    "kind": "build",
+                    "isDefault": true
+                },
+                "problemMatcher": ["$gcc"],
+                "detail": "Build the project with CMake"
+            },
+            {
+                "label": "CMake: Clean",
+                "type": "shell",
+                "command": "cmake",
+                "args": [
+                    "--build",
+                    "${workspaceFolder}/build",
+                    "--target",
+                    "clean"
+                ],
+                "group": "build",
+                "problemMatcher": [],
+                "detail": "Clean build artifacts"
+            },
+            {
+                "label": "CMake: Rebuild",
+                "type": "shell",
+                "command": "cmake",
+                "args": [
+                    "--build",
+                    "${workspaceFolder}/build",
+                    "--config",
+                    "Release",
+                    "--clean-first",
+                    "-j"
+                ],
+                "group": "build",
+                "problemMatcher": ["$gcc"],
+                "detail": "Clean and build the project"
+            },
+            {
+                "label": "CMake: Configure Debug",
+                "type": "shell",
+                "command": "cmake",
+                "args": [
+                    "-S",
+                    "${workspaceFolder}",
+                    "-B",
+                    "${workspaceFolder}/build",
+                    "-DCMAKE_BUILD_TYPE=Debug",
+                    "-DCMAKE_EXPORT_COMPILE_COMMANDS=ON"
+                ],
+                "group": "build",
+                "problemMatcher": [],
+                "detail": "Configure CMake project for Debug"
+            },
+            {
+                "label": "CMake: Build Debug",
+                "type": "shell",
+                "command": "cmake",
+                "args": [
+                    "--build",
+                    "${workspaceFolder}/build",
+                    "--config",
+                    "Debug",
+                    "-j"
+                ],
+                "group": "build",
+                "problemMatcher": ["$gcc"],
+                "detail": "Build the project in Debug mode"
+            },
+            {
+                "label": "QMake: Build",
+                "type": "shell",
+                "command": "bash",
+                "args": [
+                    "-c",
+                    "cd screen_watermark && qmake && make"
+                ],
+                "group": "build",
+                "problemMatcher": ["$gcc"],
+                "detail": "Build with qmake (Linux/Docker)",
+                "linux": {
+                    "command": "bash",
+                    "args": [
+                        "-c",
+                        "cd screen_watermark && qmake && make"
+                    ]
+                }
+            },
+            {
+                "label": "Run screen_watermark",
+                "type": "shell",
+                "command": "${workspaceFolder}/build/bin/screen_watermark",
+                "args": [],
+                "group": "test",
+                "problemMatcher": [],
+                "detail": "Run the compiled screen_watermark application",
+                "dependsOn": ["CMake: Build"]
+            }
+        ]
+    }
+}
