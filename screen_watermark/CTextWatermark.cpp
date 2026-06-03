@@ -2,7 +2,11 @@
 #include <QApplication>
 #include <QWindow>
 #include <QDebug>
+#if QT_VERSION >= QT_VERSION_CHECK(5, 0, 0)
+#include <QScreen>
+#else
 #include <QDesktopWidget>
+#endif
 #include <QFontDatabase>
 #include <QPaintDevice>
 #include <QPainter>
@@ -15,7 +19,11 @@
 
 CTextWatermark::CTextWatermark(QWidget *parent)
 {
+#if QT_VERSION >= QT_VERSION_CHECK(5, 0, 0)
+    QRect rect = QGuiApplication::primaryScreen()->availableGeometry();
+#else
     QRect rect = QApplication::desktop()->availableGeometry();
+#endif
     this->setFixedSize(rect.size());
     this->setWindowTitle(QString::fromLocal8Bit("mywatermark"));
     this->setAttribute(Qt::WA_ShowWithoutActivating);       // 展示时不激活
@@ -116,12 +124,41 @@ bool CTextWatermark::InitWaterMark(const QString &strContent)
     return true;
 }
 
+void CTextWatermark::SetTransparencyMode(TransparencyMode mode, float transparency)
+{
+    m_transparencyMode = mode;
+    m_transparency = transparency;
+    qInfo() << "SetTransparencyMode: mode=" << static_cast<int>(mode) << " transparency=" << transparency;
+}
+
 void CTextWatermark::paintEvent(QPaintEvent *event)
 {
-    setWindowOpacity(WM_TRANSPARENCY);
+    // 根据模式设置透明度
+    switch (m_transparencyMode)
+    {
+    case TransparencyMode::WindowOpacity:
+        // 方式1: 使用 setWindowOpacity - 这会影响系统合成器的透明度处理
+        setWindowOpacity(m_transparency);
+        break;
+    case TransparencyMode::PainterOpacity:
+        // 方式2: 使用 QPainter::setOpacity - 仅影响绘制内容，不影响窗口属性
+        // setWindowOpacity(1.0);  // 确保窗口本身不透明
+        break;
+    case TransparencyMode::NoOpacity:
+        // 方式3: 不设置透明度
+        // setWindowOpacity(1.0);
+        break;
+    }
 
     QPainter paint(this);
     paint.setCompositionMode(QPainter::CompositionMode_Source);
+
+    // 如果使用 Painter 模式，在绘制时设置透明度
+    if (m_transparencyMode == TransparencyMode::PainterOpacity)
+    {
+        paint.setOpacity(m_transparency);
+    }
+
     paint.drawPixmap(rect(), m_pixMap);
     QWidget::paintEvent(event);
 }
